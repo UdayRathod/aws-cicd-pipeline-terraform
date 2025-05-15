@@ -15,7 +15,7 @@ Amazon Simple Storage Service (Amazon S3) is a cloud-based object storage servic
 
 
 Below are the overview steps how the CICD functions by deploying this code:
-Architecture diagram for this setup: ./Terraform-CID-arch.png
+Architecture diagram for this setup: ./Terraform-CICD-arch.png
 
 First export your AWS account creds via ENV variables: 
 # For Linux and MacOS
