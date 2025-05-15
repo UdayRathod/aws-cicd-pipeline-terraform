@@ -1,0 +1,58 @@
+This code deployes CICD pipeline on AWS using AWS servcies like:
+
+AWS CodePipeline helps you quickly model and configure the different stages of a software release and automate the steps required to release software changes continuously.
+
+AWS CodeBuild is a fully managed build service that helps you compile source code, run unit tests, and produce artifacts that are ready to deploy.
+
+AWS CodeCommit is a version control service that helps you privately store and manage Git repositories, without needing to manage your own source control system.
+
+AWS Identity and Access Management (IAM) helps you securely manage access to your AWS resources by controlling who is authenticated and authorized to use them.
+
+AWS Key Management Service (AWS KMS) helps you create and control cryptographic keys to help protect your data.
+
+Amazon Simple Storage Service (Amazon S3) is a cloud-based object storage service that helps you store, protect, and retrieve any amount of data.
+
+
+
+Below are the overview steps how the CICD functions by deploying this code:
+Architecture diagram for this setup: ./Terraform-CID-arch.png
+
+First export your AWS account creds via ENV variables: 
+# For Linux and MacOS
+export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_ACCESS_KEY
+
+# For PowerShell
+$env:AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY"
+$env:AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
+
+
+1) In CodePipeline, an AWS user initiates the actions proposed in a Terraform plan by running the terraform apply command in the AWS CLI.
+2) AWS CodePipeline assumes an IAM service role that includes the policies required to access CodeCommit, CodeBuild, AWS KMS, and Amazon S3.
+3) CodePipeline runs the “checkout” pipeline stage to pull the Terraform configuration from an AWS CodeCommit repository for testing.
+4) CodePipeline runs the “validate” stage to test the Terraform configuration by running IaC validation tools and running Terraform IaC validation commands in a CodeBuild project.
+5) CodePipeline runs the “plan” stage to create a plan in the CodeBuild project based on the Terraform configuration. The AWS user can review this plan before the changes are applied to the test environment.
+6) Code Pipeline runs the “apply” stage to implement the plan by using the CodeBuild project to provision the required infrastructure in the test environment.
+7) CodePipeline runs the “destroy” stage, which uses CodeBuild to remove the test infrastructure that was created during the “apply” stage.
+8) An Amazon S3 bucket stores pipeline artifacts, which are encrypted and decrypted by using an AWS KMS customer managed key.
+
+
+
+To deploy this code:
+
+Clone this repo
+Update the varibles in "terraform.tfvars"
+Update the Terraform provider configuration in S3 module for creating the Amazon S3 replication bucket by updating the region value in provider.tf.
+Initialize the Terraform configuration: terraform init
+Create the Terraform plan: terraform plan --var-file=terraform.tfvars -out=tfplan
+Verify the Terraform plan.
+Deploy the solution: terraform apply "tfplan"
+Sign in to the AWS Management Console. Then, open the CodeCommit console.
+Clone the main branch of the CODE COMMIT source repository to your local workstation. 
+Copy the templates folder to Codecommmit main repo: cp -r templates $YOUR_CODECOMMIT_REPO_ROOT
+NOTE: The templates folder contains the build specification files and the validation script for the root directory of the source repository.
+Add your required Terraform IaC configurations to the root folder of the source repository.
+Push the changes to the main branch of the Codecommit source repository.
+Sign in to the AWS Management Console and open the CodePipeline console.
+Open the pipeline in the CodePipeline console and choose Release change.
+Review each pipeline stage and confirm it’s working as expected.
