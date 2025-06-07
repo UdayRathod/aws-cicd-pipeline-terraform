@@ -56,3 +56,14 @@ Push the changes to the main branch of the Codecommit source repository.
 Sign in to the AWS Management Console and open the CodePipeline console.
 Open the pipeline in the CodePipeline console and choose Release change.
 Review each pipeline stage and confirm it’s working as expected.
+
+
+# Contributing
+Contributions are welcome!
+To contribute, please fork the repository, create a new branch for your feature or bugfix, and submit a pull request.
+For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+# License
+This project is licensed under the MIT License.
